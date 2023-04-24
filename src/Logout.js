@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-class Logout extends Component {
-
-  logout() {
-    this.props.history.push('/');
-    this.props.keycloak.logout();
+function Logout(props) {
+  //const history = useHistory();
+  const navigate= useNavigate();
+  function logout() {
+    navigate('/');
+    props.keycloak.logout();
   }
 
-  render() {
-    return (
-      <button onClick={ () => this.logout() }>
-        Logout
-      </button>
-    );
-  }
+  return (
+    <button onClick={logout}>
+      Logout
+    </button>
+  );
 }
-export default withRouter(Logout);
+
+export default Logout;

@@ -1,31 +1,34 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-class UserInfo extends Component {
+function UserInfo(props) {
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    email: '',
+    id: '',
+    cpf: ''
+  });
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: "",
-      email: "",
-      id: "",
-      cpf: ""
-    };
-    this.props.keycloak.loadUserInfo().then(userInfo => {
-        this.setState({name: userInfo.name, email: userInfo.email, id: userInfo.sub, cpf: userInfo.CPF})
+  useEffect(() => {
+    props.keycloak.loadUserInfo().then(userInfo => {
+      setUserInfo({
+        name: userInfo.name,
+        email: userInfo.email,
+        id: userInfo.sub,
+        cpf: userInfo.CPF
+      });
     });
 
-    console.log(this.props.keycloak.token);
-  }
+    console.log(props.keycloak.token);
+  }, [props.keycloak]);
 
-  render() {
-    return (
-      <div className="UserInfo">
-        <p>CPF: {this.state.cpf}</p>
-        <p>Name: {this.state.name}</p>
-        <p>Email: {this.state.email}</p>
-        <p>ID: {this.state.id}</p>
-      </div>
-    );
-  }
+  return (
+    <div className="UserInfo">
+      <p>CPF: {userInfo.cpf}</p>
+      <p>Name: {userInfo.name}</p>
+      <p>Email: {userInfo.email}</p>
+      <p>ID: {userInfo.id}</p>
+    </div>
+  );
 }
+
 export default UserInfo;

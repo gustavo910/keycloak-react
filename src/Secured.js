@@ -1,36 +1,37 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import Keycloak from 'keycloak-js';
 import UserInfo from './UserInfo';
 import Logout from './Logout';
 
-class Secured extends Component {
+function Secured() {
+  const [keycloak, setKeycloak] = useState(null);
+  const [authenticated, setAuthenticated] = useState(false);
 
-  constructor(props) {
-    super(props);
-    this.state = { keycloak: null, authenticated: false };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     const keycloak = Keycloak('/keycloak.json');
-    keycloak.init({onLoad: 'login-required'}).then(authenticated => {
-      this.setState({ keycloak: keycloak, authenticated: authenticated })
-    })    
-  }
+    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+      setKeycloak(keycloak);
+      setAuthenticated(authenticated);
+    });
+  }, []);
 
-  render() {
-    if(this.state.keycloak) {
-      if(this.state.authenticated) return (
+  if (keycloak) {
+    if (authenticated) {
+      return (
         <div>
-          <p>This is a Keycloak-secured component of your application. You shouldn't be able
-          to see this unless you've authenticated with Keycloak.</p>
-          <UserInfo keycloak={this.state.keycloak} />
-          <Logout keycloak={this.state.keycloak} />
+          <p>
+            This is a Keycloak-secured component of your application. You shouldn't be able
+            to see this unless you've authenticated with Keycloak.
+          </p>
+          <UserInfo keycloak={keycloak} />
+          <Logout keycloak={keycloak} />
         </div>
-      ); else return (<div>Unable to authenticate!</div>)
+      );
+    } else {
+      return <div>Unable to authenticate!</div>;
     }
-    return (
-      <div>Initializing Keycloak...</div>
-    );
   }
+  return <div>Initializing Keycloak...</div>;
 }
+
 export default Secured;
